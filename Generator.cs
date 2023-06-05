@@ -29,7 +29,7 @@ public class Generator
         {
             functions.Add(AddNumber);
         }
-        var streamWriter =  File.AppendText(_sourceFileName);
+        using var  streamWriter =  File.AppendText(_sourceFileName);
         do
         {
             _numbers.Clear();
@@ -40,7 +40,6 @@ public class Generator
             streamWriter.Write('\n');
             iterator++;
         } while (iterator < 3000);
-        streamWriter.Close();
     }
 
     void AddNumber()
