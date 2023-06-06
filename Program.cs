@@ -3,6 +3,7 @@
 using System.Diagnostics;
 using sorter;
 
+
 void CleanupDirectory()
 {
     var files = Directory.GetFiles(".", "*.txt").ToArray();
@@ -11,6 +12,8 @@ void CleanupDirectory()
         File.Delete(file);
     }
 }
+
+
 
 string testFile = "testfile.txt";
 string resultfileName = "result.txt";
