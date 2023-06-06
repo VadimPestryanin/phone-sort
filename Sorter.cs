@@ -54,6 +54,7 @@ public class Sorter
         Span<byte> buffer = new byte[Constants.NUMBER_LENGTH + 1];//number length + LF
         int bytesRead = 1;
         string filePrefix = string.Empty;
+     
         
         using (FileStream stream = new FileStream(_sourceFileName,FileMode.Open, FileAccess.Read))
         {
@@ -85,7 +86,7 @@ public class Sorter
         Split_FS();
         
         //sort + merge
-        var files = Directory.GetFiles(".", "+7*.txt").Select(x=>x.Substring(2)).OrderBy(x=>x).ToArray();
+        var files = Directory.GetFiles(".", "+7*.txt").Select(x=>x.Substring(2)).OrderBy(x=>x);
 
         foreach (var file in files)
         {
