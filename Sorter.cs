@@ -87,14 +87,13 @@ public class Sorter
         //sort + merge
         var files = Directory.GetFiles(".", "+7*.txt").Select(x=>x.Substring(2)).OrderBy(x=>x).ToArray();
 
-        using (var outputStream = File.Create(_resultFileName))
+        foreach (var file in files)
         {
-            foreach (var file in files)
-            {
-                using var inputStream = File.OpenRead(file);
-                inputStream.CopyTo(outputStream);
-            }
+            var lines = File.ReadAllLines(file);
+            Array.Sort(lines, StringComparer.OrdinalIgnoreCase);
+            File.AppendAllLines(_resultFileName, lines);
         }
+
     }
 
     string GenerateName(string prefix) => $"{prefix}.txt";
