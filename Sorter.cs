@@ -63,7 +63,7 @@ public class Sorter
                 bytesRead = stream.Read(buffer);
                 if (bytesRead > 0 )
                 {
-                    filePrefix = Encoding.UTF8.GetString(buffer.Slice(0,6));
+                    filePrefix = Encoding.UTF8.GetString(buffer.Slice(0,5));
                     _fileStreams.TryGetValue(filePrefix, out var fs);
                     if (fs == null)
                     {
@@ -84,9 +84,10 @@ public class Sorter
     public void SplitSort()
     {
         Split_FS();
-        
+
+      
         //sort + merge
-        var files = Directory.GetFiles(".", "+7*.txt").Select(x=>x.Substring(2)).OrderBy(x=>x);
+        var files = Directory.GetFiles(".", "+7*.txt").OrderBy(x=>x);
 
         foreach (var file in files)
         {
