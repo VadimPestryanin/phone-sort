@@ -16,15 +16,15 @@ void CleanupDirectory(string pattern)
 
 
 
-int resultAttempts = 25;
+int ATTEMPTS = 50;
 string testFile = "testfile.txt";
 string resultfileName = "result.txt";
 var generator = new Generator(testFile);
 
-var results = new long[resultAttempts];
+var results = new long[ATTEMPTS];
 
 CleanupDirectory("*.txt");
-Thread.Sleep(1000);
+Thread.Sleep(300);
 Console.WriteLine($"Cleanup Complete");
 var sw = new Stopwatch();
 Console.WriteLine($"Generation started");
@@ -33,12 +33,12 @@ generator.Generate();
 Console.WriteLine($"Generation finished, elapsed time: {sw.ElapsedMilliseconds} ms");
 sw.Stop();
 
-for(int i =0;i< resultAttempts;i++){
+for(int i =0;i< ATTEMPTS;i++){
     var sorter = new Sorter(testFile,resultfileName);
     CleanupDirectory("+7*.txt");
     sw.Restart();
     sorter.SplitSort();
-    Console.WriteLine($"SplitSort finished, elapsed time: {sw.ElapsedMilliseconds} ms");
+    Console.WriteLine($"Run {i} finished, elapsed time: {sw.ElapsedMilliseconds} ms");
     results[i] = sw.ElapsedMilliseconds;
 }
 Console.WriteLine($"SplitSort AVG time : {results.Average()}");
