@@ -1,6 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using sorter;
 
@@ -16,7 +15,7 @@ void CleanupDirectory(string pattern)
 
 
 
-int ATTEMPTS = 50;
+int ATTEMPTS = 15;
 string testFile = "testfile.txt";
 string resultfileName = "result.txt";
 var generator = new Generator(testFile);
@@ -38,7 +37,7 @@ for(int i =0;i< ATTEMPTS;i++){
     CleanupDirectory("+7*.txt");
     sw.Restart();
     sorter.SplitSort();
-    Console.WriteLine($"Run {i} finished, elapsed time: {sw.ElapsedMilliseconds} ms");
+    Console.WriteLine($"Run {i+1} finished, elapsed time: {sw.ElapsedMilliseconds} ms");
     results[i] = sw.ElapsedMilliseconds;
 }
 Console.WriteLine($"SplitSort AVG time : {results.Average()}");

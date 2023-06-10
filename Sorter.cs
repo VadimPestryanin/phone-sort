@@ -18,7 +18,7 @@ public class Sorter
         _fileStreams = new Dictionary<string,FileStream>();
     }
 
-    private void Split_FS()
+    private void SplitFiles()
     {
         Span<byte> buffer = new byte[Constants.NUMBER_LENGTH + 1];//number length + LF
         int bytesRead;
@@ -50,22 +50,11 @@ public class Sorter
     }
     public void SplitSort()
     {
-        Split_FS();
+        SplitFiles();
 
         //sort + merge
         var files = Directory.GetFiles(".", "+7*.txt").OrderBy(x=>x).ToArray();
 
-        
-        //old
-        
-        // foreach (var file in files)
-        // {
-        //     var lines = File.ReadAllLines(file);
-        //     Array.Sort(lines, StringComparer.OrdinalIgnoreCase);
-        //     File.AppendAllLines(_resultFileName, lines);
-        // }
-        
-        
         // new
         
         int skip = 0;
