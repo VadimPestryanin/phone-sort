@@ -1,12 +1,13 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using sorter;
 
 
-void CleanupDirectory()
+void CleanupDirectory(string pattern)
 {
-    var files = Directory.GetFiles(".", "*.txt").ToArray();
+    var files = Directory.GetFiles(".", pattern).ToArray();
     foreach (var file in files)
     {
         File.Delete(file);
@@ -15,27 +16,30 @@ void CleanupDirectory()
 
 
 
+int resultAttempts = 25;
 string testFile = "testfile.txt";
 string resultfileName = "result.txt";
 var generator = new Generator(testFile);
-var sorter = new Sorter(testFile,resultfileName);
 
-Console.WriteLine($"Initializing...");
+var results = new long[resultAttempts];
 
-CleanupDirectory();
+CleanupDirectory("*.txt");
 Thread.Sleep(1000);
-Console.WriteLine($"Initializing Complete");
-
+Console.WriteLine($"Cleanup Complete");
 var sw = new Stopwatch();
-
 Console.WriteLine($"Generation started");
 sw.Start();
 generator.Generate();
-Console.WriteLine($"Generation finished, elapsed time: {sw.Elapsed}");
+Console.WriteLine($"Generation finished, elapsed time: {sw.ElapsedMilliseconds} ms");
 sw.Stop();
 
-Console.WriteLine($"SplitSort started");
-sw.Start();
-sorter.SplitSort();
-Console.WriteLine($"SplitSort finished, elapsed time: {sw.Elapsed}");
+for(int i =0;i< resultAttempts;i++){
+    var sorter = new Sorter(testFile,resultfileName);
+    CleanupDirectory("+7*.txt");
+    sw.Restart();
+    sorter.SplitSort();
+    Console.WriteLine($"SplitSort finished, elapsed time: {sw.ElapsedMilliseconds} ms");
+    results[i] = sw.ElapsedMilliseconds;
+}
+Console.WriteLine($"SplitSort AVG time : {results.Average()}");
 sw.Stop();
