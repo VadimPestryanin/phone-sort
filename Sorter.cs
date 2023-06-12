@@ -53,24 +53,21 @@ public class Sorter
         SplitFiles();
 
         //sort + merge
-        var files = Directory.GetFiles(".", "+7*.txt").OrderBy(x=>x).ToArray();
+        var files = Directory.GetFiles(".", "+7*.txt").OrderBy(x=>x).ToList();
 
-        // new
-        
-        int skip = 0;
         int batchSize = 5;
-        var batch = files.Skip(batchSize * skip).Take(batchSize).ToArray();
+        var batch = files.Take(batchSize).ToList();
         while (batch.Any())
         {
             Parallel.ForEach(batch, s =>
             {
-                var lines = File.ReadAllLines(s);
+                var lines = ReadAllLines(s);
                 Array.Sort(lines, StringComparer.OrdinalIgnoreCase);
-                //File.AppendAllLines(_resultFileName, lines);
                 File.WriteAllLines(s, lines);
             });
-            skip++;
-            batch = files.Skip(batchSize * skip).Take(batchSize).ToArray();
+            
+            files.RemoveRange(0,files.Count < batchSize ? files.Count : batchSize);
+            batch = files.Take(batchSize).ToList();
         }
         
         using var outputStream = File.Create(_resultFileName);
@@ -82,6 +79,20 @@ public class Sorter
     }
 
     string GenerateName(string prefix) => $"{prefix}.txt";
+    
+    public static string[] ReadAllLines(string path)
+    {
+        string? line;
+        List<string> lines = new List<string>(1000);
+
+        using StreamReader sr = new StreamReader(path, Encoding.UTF8);
+        while ((line = sr.ReadLine()) != null)
+        {
+            lines.Add(line);
+        }
+
+        return lines.ToArray();
+    }
 
    
 }
