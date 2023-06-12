@@ -8,14 +8,13 @@ public class Sorter
     private string _sourceFileName;
     private string _resultFileName;
 
-    //private Dictionary<string,StreamWriter> _streamWriters;
-    private Dictionary<string,FileStream> _fileStreams;
+    
+    private ConcurrentDictionary<string,FileStream> _fileStreams;
     public Sorter(string sourceFileName,string resultFileName)
     {
         this._sourceFileName = sourceFileName;
         _resultFileName = resultFileName;
-        //_streamWriters = new Dictionary<string,StreamWriter>();
-        _fileStreams = new Dictionary<string,FileStream>();
+        _fileStreams = new ConcurrentDictionary<string,FileStream>();
     }
 
     private void SplitFiles()
@@ -47,6 +46,8 @@ public class Sorter
         {
             sw.Dispose();
         }
+        
+   
     }
     public void SplitSort()
     {
@@ -55,32 +56,35 @@ public class Sorter
         //sort + merge
         var files = Directory.GetFiles(".", "+7*.txt").OrderBy(x=>x).ToList();
 
-        int batchSize = 5;
+        int batchSize = 16;
         var batch = files.Take(batchSize).ToList();
         while (batch.Any())
         {
-            Parallel.ForEach(batch, s =>
+             Parallel.ForEach(batch,s =>
             {
-                var lines = ReadAllLines(s);
+                var lines =  ReadAllLines(s);
                 Array.Sort(lines, StringComparer.OrdinalIgnoreCase);
-                File.WriteAllLines(s, lines);
+                using var textWriter = new StreamWriter(s, false, Encoding.UTF8);
+                foreach (string line in lines)
+                {
+                    textWriter.WriteLine(line);
+                }
             });
-            
+
             files.RemoveRange(0,files.Count < batchSize ? files.Count : batchSize);
             batch = files.Take(batchSize).ToList();
         }
-        
         using var outputStream = File.Create(_resultFileName);
         foreach (var file in files)
         {
             using var inputStream = File.OpenRead(file);
-            inputStream.CopyTo(outputStream);
+            inputStream.CopyToAsync(outputStream);
         }
     }
 
     string GenerateName(string prefix) => $"{prefix}.txt";
     
-    public static string[] ReadAllLines(string path)
+    public string[] ReadAllLines(string path)
     {
         string? line;
         List<string> lines = new List<string>(1000);
